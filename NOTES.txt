@@ -1,0 +1,11 @@
+sudo lvcreate --name k3s-storage --size 100G hv2-vg
+sudo mkfs.xfs /dev/mapper/hv2--vg-k3s--storage
+sudo vi /etc/fstab
+...adding
+==========
+/dev/mapper/hv2--vg-k3s--storage /srv/k3s/storage xfs defaults 1 1
+
+sudo mkdir -pv /srv/k3s/storage
+sudo mount /dev/mapper/hv2--vg-k3s--storage
+k3s kubectl apply -f local-path-storage.yaml
+k3s kubectl patch storageclass local-path -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
